@@ -376,6 +376,21 @@
     .then(res => res.json())
     .then(data => {
       if (data && data.success) {
+        // หากเปิดใน LINE App ให้ส่งข้อความเข้าแชทผ่าน LIFF Client ด้วย
+        if (typeof liff !== 'undefined' && liff.isInClient() && liff.isApiAvailable('sendMessages')) {
+          const msgText = 
+            `✅ บันทึกข้อมูลลงทะเบียนเรียบร้อย\n\n` +
+            `ชื่อ-นามสกุล (TH): ${payload.FullNameTH}\n` +
+            `ชื่อ-นามสกุล (EN): ${payload.FullNameEN}\n` +
+            `รหัสพนักงาน: ${payload.Emp_Code}\n` +
+            `แผนก: ${payload.Department}\n` +
+            `เบอร์โทร: ${payload.Tel}\n` +
+            `อีเมล: ${payload.Email || '-'}\n\n` +
+            `หากข้อมูลไม่ถูกต้อง กรุณาเปิดลิงก์เดิมเพื่อแก้ไขได้ทันที`;
+          
+          liff.sendMessages([{ type: 'text', text: msgText }]).catch(e => console.log("liff sendMessages:", e));
+        }
+
         Swal.fire({
           icon: 'success',
           title: 'บันทึกสำเร็จ!',
