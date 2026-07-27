@@ -153,8 +153,8 @@ function handleRegistrationDoPost(e) {
           if (key === 'Is_Active') return 'Yes'; // Default สำหรับ Insert ใหม่
           if (key === 'Last_Update') return timestamp;
           
-          // Scr_01 - Scr_17 ปล่อยว่าง / No
-          if (key.startsWith('Scr_')) return '';
+          // Scr_01 - Scr_17 default เป็น 'No'
+          if (key.startsWith('Scr_')) return 'No';
           return '';
         });
 
@@ -162,12 +162,7 @@ function handleRegistrationDoPost(e) {
       }
 
       // 5. บันทึก Log ลง 99_System_Log
-      writeSystemLog("Registration", isUpdate ? "UPDATE" : "INSERT", {
-        Line_UID: lineUid,
-        Emp_Code: empCode,
-        FullNameTH: fullNameTH,
-        Department: department
-      });
+      writeSystemLog("Registration", isUpdate ? "UPDATE" : "INSERT", payload, lineUid);
     }, 15000);
 
     // 6. ส่ง LINE Push Message สรุปข้อมูล (ครอบ try...catch แยกต่างหาก ห้ามทำให้ Transaction Fail)

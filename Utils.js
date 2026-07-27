@@ -48,14 +48,21 @@ function getSheetData(sheetName) {
 }
 
 /**
- * บันทึก Log ลงใน Sheet 99_System_Log
+ * บันทึก Log ลงใน Sheet 99_System_Log ตามโครงสร้าง Audit Trail
+ * Fields: Log_ID | Timestamp | Line_UID | Module_Name | Action_Type | Raw_JSON
  */
-function writeSystemLog(moduleName, actionType, rawJson) {
+function writeSystemLog(moduleName, actionType, rawJson, lineUid) {
   try {
     const sheet = getSheetByName(CONFIG.SHEETS.SYSTEM_LOG);
-    const timestamp = Utilities.formatDate(new Date(), CONFIG.TIMEZONE, CONFIG.DATE_FORMAT);
+    const now = new Date();
+    const dateStr = Utilities.formatDate(now, CONFIG.TIMEZONE, "yyyyMMddHHmmss");
+    const randDigits = Math.floor(Math.random() * 8999 + 1000);
+    const logId = "LOG-" + dateStr + "-" + randDigits;
+    const timestamp = Utilities.formatDate(now, CONFIG.TIMEZONE, CONFIG.DATE_FORMAT);
+    const actorUid = lineUid || (typeof rawJson === 'object' && rawJson.Line_UID ? rawJson.Line_UID : '');
     const jsonStr = typeof rawJson === 'object' ? JSON.stringify(rawJson) : String(rawJson);
-    sheet.appendRow([timestamp, moduleName, actionType, jsonStr]);
+    
+    sheet.appendRow([logId, timestamp, actorUid, moduleName, actionType, jsonStr]);
   } catch (err) {
     Logger.log("writeSystemLog error: " + err.toString());
   }

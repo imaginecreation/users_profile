@@ -207,7 +207,7 @@
 
       if (typeof liff !== "undefined") {
         try {
-          await liff.init({ liffId: "2009016720-Bo8EDtix" }).catch(e => console.log("LIFF Init bypass:", e));
+          await liff.init({ liffId: "2009016720-Bo8EDtix" });
           if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             document.getElementById("Line_UID").value = profile.userId;
@@ -218,6 +218,12 @@
             }
             fetchExistingProfile(profile.userId);
             return;
+          } else {
+            // หากเปิดบน PC Browser แล้วยังไม่ได้ล็อกอิน ให้สั่ง liff.login()
+            if (!lineUidParam) {
+              liff.login({ redirectUri: window.location.href });
+              return;
+            }
           }
         } catch (liffErr) {
           console.log("LIFF standalone or test mode:", liffErr);
