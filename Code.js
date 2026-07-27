@@ -6,8 +6,8 @@ function doGet(e) {
   e = e || { parameter: {} };
   const action = e.parameter.action || '';
 
-  if (action === 'register') {
-    return HtmlService.createTemplateFromFile('Form_Register')
+  if (action === 'register' || action === '') {
+    return HtmlService.createTemplateFromFile('index')
       .evaluate()
       .setTitle('ลงทะเบียนข้อมูลพนักงาน (Self-Registration)')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
