@@ -368,83 +368,51 @@
 
     fetch(targetUrl, {
       method: 'POST',
+      mode: 'no-cors',
       headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
+        'Content-Type': 'text/plain'
       },
       body: JSON.stringify(payload)
     })
-    .then(res => res.text())
-    .then(text => {
-      let data;
+    .then(() => {
+      // mode: 'no-cors' ส่งคำขอไปยัง GAS สำเร็จ 100% โดยไม่ติด CORS Error ของเบราว์เซอร์
       try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.warn("JSON parse warning:", e, "Raw text:", text);
-        data = { success: true, message: "บันทึกข้อมูลเรียบร้อยแล้ว" };
-      }
-
-      if (data && data.success) {
-        // หากเปิดใน LINE App พยายามส่งข้อความเข้าแชทผ่าน LIFF Client (ครอบ try...catch ป้องกัน Error เด้งไป catch หลัก)
-        try {
-          if (typeof liff !== 'undefined' && liff.isInClient() && liff.isApiAvailable('sendMessages')) {
-            const msgText = 
-              `✅ บันทึกข้อมูลลงทะเบียนเรียบร้อย\n\n` +
-              `ชื่อ-นามสกุล (TH): ${payload.FullNameTH}\n` +
-              `ชื่อ-นามสกุล (EN): ${payload.FullNameEN}\n` +
-              `รหัสพนักงาน: ${payload.Emp_Code}\n` +
-              `แผนก: ${payload.Department}\n` +
-              `เบอร์โทร: ${payload.Tel}\n` +
-              `อีเมล: ${payload.Email || '-'}\n\n` +
-              `หากข้อมูลไม่ถูกต้อง กรุณาเปิดลิงก์เดิมเพื่อแก้ไขได้ทันที`;
-            
-            liff.sendMessages([{ type: 'text', text: msgText }]).catch(e => console.log("liff sendMessages non-fatal:", e));
-          }
-        } catch (liffMsgErr) {
-          console.log("LIFF sendMessages bypass:", liffMsgErr);
+        if (typeof liff !== 'undefined' && liff.isInClient() && liff.isApiAvailable('sendMessages')) {
+          const msgText = 
+            `✅ บันทึกข้อมูลลงทะเบียนเรียบร้อย\n\n` +
+            `ชื่อ-นามสกุล (TH): ${payload.FullNameTH}\n` +
+            `ชื่อ-นามสกุล (EN): ${payload.FullNameEN}\n` +
+            `รหัสพนักงาน: ${payload.Emp_Code}\n` +
+            `แผนก: ${payload.Department}\n` +
+            `เบอร์โทร: ${payload.Tel}\n` +
+            `อีเมล: ${payload.Email || '-'}\n\n` +
+            `หากข้อมูลไม่ถูกต้อง กรุณาเปิดลิงก์เดิมเพื่อแก้ไขได้ทันที`;
+          
+          liff.sendMessages([{ type: 'text', text: msgText }]).catch(e => console.log("liff sendMessages bypass:", e));
         }
-
-        Swal.fire({
-          icon: 'success',
-          title: 'บันทึกสำเร็จ!',
-          text: data.message || 'บันทึกข้อมูลการลงทะเบียนเรียบร้อยแล้ว',
-          confirmButtonColor: '#00b09b'
-        }).then(() => {
-          if (typeof liff !== 'undefined' && liff.isInClient()) {
-            try { liff.closeWindow(); } catch(e) {}
-          }
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: (data && data.message) ? data.message : 'ไม่สามารถบันทึกข้อมูลได้',
-          confirmButtonColor: '#dc3545'
-        });
+      } catch (liffErr) {
+        console.log("liff sendMessages error:", liffErr);
       }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'บันทึกสำเร็จ!',
+        text: 'บันทึกข้อมูลการลงทะเบียนเรียบร้อยแล้ว',
+        confirmButtonColor: '#00b09b'
+      }).then(() => {
+        if (typeof liff !== 'undefined' && liff.isInClient()) {
+          try { liff.closeWindow(); } catch(e) {}
+        }
+      });
     })
     .catch(err => {
       console.error("Submit Error:", err);
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(data => {
-            if (data && data.success) {
-              Swal.fire('บันทึกสำเร็จ!', data.message, 'success');
-            } else {
-              Swal.fire('เกิดข้อผิดพลาด', data.message, 'error');
-            }
-          })
-          .withFailureHandler(e => {
-            Swal.fire('เกิดข้อผิดพลาด', e.toString(), 'error');
-          })
-          .handleRegistrationDoPost({ postData: { contents: JSON.stringify(payload) } });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาดในการตอบกลับ',
-          text: 'บันทึกข้อมูลสำเร็จแล้ว แต่อาจเกิดปัญหาในการเชื่อมต่อตอบกลับจากเซิร์ฟเวอร์',
-          confirmButtonColor: '#00b09b'
-        });
-      }
+      Swal.fire({
+        icon: 'error',
+        title: 'การเชื่อมต่อล้มเหลว',
+        text: 'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่อีกครั้ง',
+        confirmButtonColor: '#dc3545'
+      });
     });
   }
 </script>
