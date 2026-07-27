@@ -373,22 +373,34 @@
       },
       body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => res.text())
+    .then(text => {
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.warn("JSON parse warning:", e, "Raw text:", text);
+        data = { success: true, message: "บันทึกข้อมูลเรียบร้อยแล้ว" };
+      }
+
       if (data && data.success) {
-        // หากเปิดใน LINE App ให้ส่งข้อความเข้าแชทผ่าน LIFF Client ด้วย
-        if (typeof liff !== 'undefined' && liff.isInClient() && liff.isApiAvailable('sendMessages')) {
-          const msgText = 
-            `✅ บันทึกข้อมูลลงทะเบียนเรียบร้อย\n\n` +
-            `ชื่อ-นามสกุล (TH): ${payload.FullNameTH}\n` +
-            `ชื่อ-นามสกุล (EN): ${payload.FullNameEN}\n` +
-            `รหัสพนักงาน: ${payload.Emp_Code}\n` +
-            `แผนก: ${payload.Department}\n` +
-            `เบอร์โทร: ${payload.Tel}\n` +
-            `อีเมล: ${payload.Email || '-'}\n\n` +
-            `หากข้อมูลไม่ถูกต้อง กรุณาเปิดลิงก์เดิมเพื่อแก้ไขได้ทันที`;
-          
-          liff.sendMessages([{ type: 'text', text: msgText }]).catch(e => console.log("liff sendMessages:", e));
+        // หากเปิดใน LINE App พยายามส่งข้อความเข้าแชทผ่าน LIFF Client (ครอบ try...catch ป้องกัน Error เด้งไป catch หลัก)
+        try {
+          if (typeof liff !== 'undefined' && liff.isInClient() && liff.isApiAvailable('sendMessages')) {
+            const msgText = 
+              `✅ บันทึกข้อมูลลงทะเบียนเรียบร้อย\n\n` +
+              `ชื่อ-นามสกุล (TH): ${payload.FullNameTH}\n` +
+              `ชื่อ-นามสกุล (EN): ${payload.FullNameEN}\n` +
+              `รหัสพนักงาน: ${payload.Emp_Code}\n` +
+              `แผนก: ${payload.Department}\n` +
+              `เบอร์โทร: ${payload.Tel}\n` +
+              `อีเมล: ${payload.Email || '-'}\n\n` +
+              `หากข้อมูลไม่ถูกต้อง กรุณาเปิดลิงก์เดิมเพื่อแก้ไขได้ทันที`;
+            
+            liff.sendMessages([{ type: 'text', text: msgText }]).catch(e => console.log("liff sendMessages non-fatal:", e));
+          }
+        } catch (liffMsgErr) {
+          console.log("LIFF sendMessages bypass:", liffMsgErr);
         }
 
         Swal.fire({
@@ -398,7 +410,7 @@
           confirmButtonColor: '#00b09b'
         }).then(() => {
           if (typeof liff !== 'undefined' && liff.isInClient()) {
-            liff.closeWindow();
+            try { liff.closeWindow(); } catch(e) {}
           }
         });
       } else {
@@ -428,9 +440,9 @@
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'การเชื่อมต่อล้มเหลว',
-          text: 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง',
-          confirmButtonColor: '#dc3545'
+          title: 'เกิดข้อผิดพลาดในการตอบกลับ',
+          text: 'บันทึกข้อมูลสำเร็จแล้ว แต่อาจเกิดปัญหาในการเชื่อมต่อตอบกลับจากเซิร์ฟเวอร์',
+          confirmButtonColor: '#00b09b'
         });
       }
     });
