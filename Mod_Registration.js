@@ -165,19 +165,7 @@ function handleRegistrationDoPost(e) {
       writeSystemLog("Registration", isUpdate ? "UPDATE" : "INSERT", payload, lineUid);
     }, 15000);
 
-    // 6. ส่ง LINE Push Message สรุปข้อมูล (ครอบ try...catch แยกต่างหาก ห้ามทำให้ Transaction Fail)
-    try {
-      sendRegistrationPushMessage(lineUid, {
-        FullNameTH: fullNameTH,
-        FullNameEN: fullNameEN,
-        Emp_Code: empCode,
-        Department: department,
-        Tel: telClean,
-        Email: email
-      });
-    } catch (pushErr) {
-      Logger.log("LINE Push Message failed: " + pushErr.toString());
-    }
+    // LINE Push Message ส่งผ่าน liff.sendMessages() ฝั่ง Client แทน (ไม่ต้องใช้ Channel Access Token)
 
     return jsonResponse(true, "บันทึกข้อมูลเรียบร้อยแล้ว", { isUpdate: isUpdate });
 
@@ -186,49 +174,6 @@ function handleRegistrationDoPost(e) {
   }
 }
 
-/**
- * ส่ง LINE Push Message สรุปข้อมูลการลงทะเบียนกลับไปยังผู้ใช้
- */
-function sendRegistrationPushMessage(lineUid, data) {
-  const channelAccessToken = CONFIG.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!channelAccessToken) {
-    Logger.log("LINE_CHANNEL_ACCESS_TOKEN is missing in CONFIG");
-    return;
-  }
-
-  const messageText = 
-    `✅ บันทึกข้อมูลลงทะเบียนเรียบร้อย\n\n` +
-    `ชื่อ-นามสกุล (TH): ${data.FullNameTH}\n` +
-    `ชื่อ-นามสกุล (EN): ${data.FullNameEN}\n` +
-    `รหัสพนักงาน: ${data.Emp_Code}\n` +
-    `แผนก: ${data.Department}\n` +
-    `เบอร์โทร: ${data.Tel}\n` +
-    `อีเมล: ${data.Email || '-'}\n\n` +
-    `หากข้อมูลไม่ถูกต้อง กรุณาเปิดลิงก์เดิมเพื่อแก้ไขได้ทันที`;
-
-  const payload = {
-    to: lineUid,
-    messages: [
-      {
-        type: "text",
-        text: messageText
-      }
-    ]
-  };
-
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    headers: {
-      "Authorization": "Bearer " + channelAccessToken
-    },
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
-  const response = UrlFetchApp.fetch("https://api.line.me/v2/bot/message/push", options);
-  Logger.log("LINE Push Response: " + response.getContentText());
-}
 
 /**
  * Helper สรุปการตอบกลับ JSON
