@@ -178,8 +178,9 @@
 </div>
 
 <script>
-  // Google Apps Script Web App Deployment URL
+  // Configuration สำหรับ Frontend
   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwMTNG00q_TJBitTYnNhJ-_e47d8qed0gRtlSDjzFw4fp1sF8_JkaOKOVtwAo6zqZx1tg/exec";
+  const LINE_LIFF_ID = "2009016720-Bo8EDtix";
   
   let isEditMode = false;
 
@@ -207,7 +208,7 @@
 
       if (typeof liff !== "undefined") {
         try {
-          await liff.init({ liffId: "2009016720-Bo8EDtix" });
+          await liff.init({ liffId: LINE_LIFF_ID });
           if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             document.getElementById("Line_UID").value = profile.userId;
