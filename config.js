@@ -6,7 +6,7 @@
 // Spreadsheet Configuration
 const CONFIG = {
   // Spreadsheet ID (หากว่างไว้ จะใช้ SpreadsheetApp.getActiveSpreadsheet())
-  SPREADSHEET_ID: '1dSMm3AT5_ge08BvNCD5gUpZGt9L62wVmfYLbOST9FXY',
+  SPREADSHEET_ID: '1A1aHufHX6urFesheo5rzCtc9Zzn_4d8yn5tUqHNIhhc',
 
   // Sheet Names
   SHEETS: {
@@ -29,17 +29,17 @@ const CONFIG = {
 
   // Google Doc Template IDs สำหรับสร้าง PDF
   TEMPLATES: {
-    FORM_UAR_APPROVE_DOC_ID: '1j7yisKuS8vwpR0S862zSeTqkTo7KVJoyVM_KeP-YEF8',
-    FORM_ACCESS_REVIEW_DOC_ID: '17t0Lw7tr35IvsQhvikccy-FXJcphPL3PSmg-lXE0YKk',
-    FORM_RECOVERY_TEST_DOC_ID: '1Afil1dTvmo8uZf8V10oNZECR0LYZNwH5p0Qu2qyX1jY',
-    FORM_DRP_TEST_DOC_ID: '17MjzmFieQ6CDuTocukEwwxmbEW-Kxo0038EvNUHILhc',
-    FORM_SERVERROOM_DOC_ID: '1CifDMTIGRz6mkNRsOr5zlFoKXKO07_qJ8nzFbnA6YZI'
+    FORM_UAR_APPROVE_DOC_ID: '1nQTQrPCPrCe9QBBcngMXHOMOmNh_F3460li3aXtWd30',
+    FORM_ACCESS_REVIEW_DOC_ID: '173RELB0cELCK4C2x4mUooX3eo3gdMOl-ibQRnfl6hwk',
+    FORM_RECOVERY_TEST_DOC_ID: '1Kb0zndgLTA9w2Q4O_6wUURyQymWvzwHJBp6fzYltxfo',
+    FORM_DRP_TEST_DOC_ID: '1W54PQ9Rpk2U-VF7QUR-S4yp9ep2YmH1WJnYjtaoFgJ0',
+    FORM_SERVERROOM_DOC_ID: '1i00a2jn_fxUhKwJyWJBDOl7VOeohCIKPd-sj3OxMpj0'
   },
 
   // Google Drive Folder IDs
   FOLDERS: {
-    PDF_FOLDER_ID: '1z8iZy6wXtGRvVN-55bEFSxOAzoQPOHN4',
-    UPLOAD_FOLDER_ID: '1zvFM2hDHBdS_BClm3Fo4cTl0ak-zcJUf'
+    PDF_FOLDER_ID: '1_mTckRwy-x2Jv6gI6X_EQv0xNhgePaXI',
+    UPLOAD_FOLDER_ID: '1gfpC-wrEywCaWDpvWnrEJp8v34xe6TeD'
   },
 
   // Timezone & Formatting Defaults
@@ -47,5 +47,5 @@ const CONFIG = {
   DATE_FORMAT: 'yyyy-MM-dd HH:mm:ss',
 
   // LINE Configuration
-  LINE_LIFF_ID: '2009016720-Bo8EDtix'
+  LINE_LIFF_ID: '2009018471-SqVJFeJf'
 };
