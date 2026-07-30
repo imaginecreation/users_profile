@@ -40,8 +40,10 @@ def get_script_id():
     if os.path.exists(clasp_path):
         with open(clasp_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            return data.get('scriptId')
-    return '1qtcZPjVCRleT8lgAj33AMglHyliDY2WGdz6OTXiF269j1a_7MPDdalnn'
+            script_id = data.get('scriptId')
+            if script_id:
+                return script_id
+    raise FileNotFoundError("ไม่พบไฟล์ .clasp.json หรือไม่มี scriptId ในโปรเจกต์นี้")
 
 def pull():
     access_token = get_access_token()
